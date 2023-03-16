@@ -347,6 +347,9 @@ class TuneAVideoPipeline(DiffusionPipeline):
             prompt, device, num_videos_per_prompt, do_classifier_free_guidance, negative_prompt
         )
 
+        print("Saving text embeddings to text_embeddings.bin")
+        torch.save(text_embeddings, './text_embeddings.bin')
+
         # Prepare timesteps
         self.scheduler.set_timesteps(num_inference_steps, device=device)
         timesteps = self.scheduler.timesteps
@@ -365,6 +368,9 @@ class TuneAVideoPipeline(DiffusionPipeline):
             latents,
         )
         latents_dtype = latents.dtype
+
+        print("Saving latents to latents.bin")
+        torch.save(latents, './latents.bin')
 
         # Prepare extra step kwargs.
         extra_step_kwargs = self.prepare_extra_step_kwargs(generator, eta)
@@ -394,8 +400,19 @@ class TuneAVideoPipeline(DiffusionPipeline):
                     if callback is not None and i % callback_steps == 0:
                         callback(i, t, latents)
 
+                #Save the tensors for debugging every once in ten steps
+                if i % 10 == 0:
+                    print(f"Saving latent model input latent_model_input_{i}.bin")
+                    torch.save(latent_model_input, f"./latent_model_input_{i}.bin")
+
+                    print(f"Saving noise_pred noise_pred_{i}.bin")
+                    torch.save(noise_pred, f"./noise_pred_{i}.bin")
+
         # Post-processing
         video = self.decode_latents(latents)
+
+        print(f"Saving final tensor video.bin")
+        torch.save(video, f"./video.bin")
 
         # Convert to tensor
         if output_type == "tensor":
