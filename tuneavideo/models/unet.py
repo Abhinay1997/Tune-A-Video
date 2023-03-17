@@ -354,16 +354,16 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
             class_emb = self.class_embedding(class_labels).to(dtype=self.dtype)
             emb = emb + class_emb
 
-        if timestep % 10 == 0:
-            print(f'saving unet input to unet_input{timestep}.bin')
-            torch.save(sample, f'./unet_input{timestep}.bin')
+        
+        print(f'saving unet input to unet_input{timestep}.bin')
+        torch.save(sample, f'./unet_input{timestep}.bin')
 
         # pre-process
         sample = self.conv_in(sample)
 
-        if timestep % 10 == 0:
-            print(f'saving unet conv_in output to conv_in{timestep}.bin')
-            torch.save(sample, f'./conv_in{timestep}.bin')
+        
+        print(f'saving unet conv_in output to conv_in{timestep}.bin')
+        torch.save(sample, f'./conv_in{timestep}.bin')
 
         # down
         down_block_res_samples = (sample,)
@@ -380,18 +380,18 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
 
             down_block_res_samples += res_samples
 
-        if timestep % 10 == 0:
-            print(f'saving downblock output to downblock_out{timestep}.bin')
-            torch.save(sample, f'./downblock_out{timestep}.bin')
+        
+        print(f'saving downblock output to downblock_out{timestep}.bin')
+        torch.save(sample, f'./downblock_out{timestep}.bin')
 
         # mid
         sample = self.mid_block(
             sample, emb, encoder_hidden_states=encoder_hidden_states, attention_mask=attention_mask
         )
 
-        if timestep % 10 == 0:
-            print(f'saving mid block output to mid_block{timestep}.bin')
-            torch.save(sample, f'./mid_block{timestep}.bin')
+        
+        print(f'saving mid block output to mid_block{timestep}.bin')
+        torch.save(sample, f'./mid_block{timestep}.bin')
 
         # up
         for i, upsample_block in enumerate(self.up_blocks):
@@ -419,9 +419,9 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
                     hidden_states=sample, temb=emb, res_hidden_states_tuple=res_samples, upsample_size=upsample_size
                 )
 
-        if timestep % 10 == 0:
-            print(f'saving mid block output to upblock{timestep}.bin')
-            torch.save(sample, f'./upblock{timestep}.bin')
+        
+        print(f'saving mid block output to upblock{timestep}.bin')
+        torch.save(sample, f'./upblock{timestep}.bin')
         # post-process
         sample = self.conv_norm_out(sample)
         sample = self.conv_act(sample)
