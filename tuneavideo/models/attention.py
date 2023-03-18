@@ -14,6 +14,7 @@ from diffusers.utils.import_utils import is_xformers_available
 from diffusers.models.attention import CrossAttention, FeedForward, AdaLayerNorm
 
 from einops import rearrange, repeat
+import random
 
 
 @dataclass
@@ -92,11 +93,24 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
         video_length = hidden_states.shape[2]
         hidden_states = rearrange(hidden_states, "b c f h w -> (b f) c h w")
         encoder_hidden_states = repeat(encoder_hidden_states, 'b n c -> (b f) n c', f=video_length)
+        
+        filename = f"./TF3D_hidden_state_{random.randint(1,100)}.bin"
+        print(f"Saving file {filename} of shape {hidden_states.shape}")
+        torch.save(hidden_states, filename)
+
+        filename = f"./TF3D_encoder_hidden_state_{random.randint(1,100)}.bin"
+        print(f"Saving file {filename} of shape {encoder_hidden_states.shape}")
+        torch.save(encoder_hidden_states, filename)
 
         batch, channel, height, weight = hidden_states.shape
         residual = hidden_states
 
         hidden_states = self.norm(hidden_states)
+        
+        filename = f"./TF3D_hidden_state_normed{random.randint(1,100)}.bin"
+        print(f"Saving file {filename} of shape {hidden_states.shape}")
+        torch.save(hidden_states, filename)
+
         if not self.use_linear_projection:
             hidden_states = self.proj_in(hidden_states)
             inner_dim = hidden_states.shape[1]
@@ -106,6 +120,10 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
             hidden_states = hidden_states.permute(0, 2, 3, 1).reshape(batch, height * weight, inner_dim)
             hidden_states = self.proj_in(hidden_states)
 
+        filename = f"./TF3D_hidden_state_projected{random.randint(1,100)}.bin"
+        print(f"Saving file {filename} of shape {hidden_states.shape}")
+        torch.save(hidden_states, filename)
+
         # Blocks
         for block in self.transformer_blocks:
             hidden_states = block(
@@ -114,6 +132,9 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
                 timestep=timestep,
                 video_length=video_length
             )
+            filename = f"./TF3D_hidden_state_out_block{i}_v{random.randint(1,100)}.bin"
+            print(f"Saving file {filename} of shape {hidden_states.shape}")
+            torch.save(hidden_states, filename)
 
         # Output
         if not self.use_linear_projection:
