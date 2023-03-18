@@ -125,7 +125,7 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
         torch.save(hidden_states, filename)
 
         # Blocks
-        for block in self.transformer_blocks:
+        for i,block in enumerate(self.transformer_blocks):
             hidden_states = block(
                 hidden_states,
                 encoder_hidden_states=encoder_hidden_states,
