@@ -107,7 +107,7 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
 
         hidden_states = self.norm(hidden_states)
         
-        filename = f"./TF3D_hidden_state_normed{random.randint(1,100)}.bin"
+        filename = f"./TF3D_hidden_state_normed{random.randint(1,1000)}.bin"
         print(f"Saving file {filename} of shape {hidden_states.shape}")
         torch.save(hidden_states, filename)
 
