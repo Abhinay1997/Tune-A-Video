@@ -355,7 +355,7 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
             emb = emb + class_emb
         
         print(f'saving temb temb{timestep}.bin')
-        torch.save(sample, f'./temb{timestep}.bin')
+        torch.save(emb, f'./temb{timestep}.bin')
         
         print(f'saving unet input to unet_input{timestep}.bin')
         torch.save(sample, f'./unet_input{timestep}.bin')
