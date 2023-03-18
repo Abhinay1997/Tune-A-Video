@@ -94,11 +94,11 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
         hidden_states = rearrange(hidden_states, "b c f h w -> (b f) c h w")
         encoder_hidden_states = repeat(encoder_hidden_states, 'b n c -> (b f) n c', f=video_length)
         
-        filename = f"./TF3D_hidden_state_{random.randint(1,100)}.bin"
+        filename = f"./TF3D_hidden_state_{random.randint(1,1000)}.bin"
         print(f"Saving file {filename} of shape {hidden_states.shape}")
         torch.save(hidden_states, filename)
 
-        filename = f"./TF3D_encoder_hidden_state_{random.randint(1,100)}.bin"
+        filename = f"./TF3D_encoder_hidden_state_{random.randint(1,1000)}.bin"
         print(f"Saving file {filename} of shape {encoder_hidden_states.shape}")
         torch.save(encoder_hidden_states, filename)
 
@@ -120,7 +120,7 @@ class Transformer3DModel(ModelMixin, ConfigMixin):
             hidden_states = hidden_states.permute(0, 2, 3, 1).reshape(batch, height * weight, inner_dim)
             hidden_states = self.proj_in(hidden_states)
 
-        filename = f"./TF3D_hidden_state_projected{random.randint(1,100)}.bin"
+        filename = f"./TF3D_hidden_state_projected{random.randint(1,1000)}.bin"
         print(f"Saving file {filename} of shape {hidden_states.shape}")
         torch.save(hidden_states, filename)
 
